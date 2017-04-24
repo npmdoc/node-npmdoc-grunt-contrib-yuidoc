@@ -1,0 +1,170 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/gruntjs/grunt-contrib-yuidoc#readme"
+
+    >grunt-contrib-yuidoc (v1.0.0)</a>
+</h1>
+<h4>Compile YUIDoc Documentation</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.grunt-contrib-yuidoc">module grunt-contrib-yuidoc</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.grunt-contrib-yuidoc.grunt-contrib-yuidoc">
+            function <span class="apidocSignatureSpan"></span>grunt-contrib-yuidoc
+            <span class="apidocSignatureSpan">(grunt)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.grunt-contrib-yuidoc" id="apidoc.module.grunt-contrib-yuidoc">module grunt-contrib-yuidoc</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.grunt-contrib-yuidoc.grunt-contrib-yuidoc" id="apidoc.element.grunt-contrib-yuidoc.grunt-contrib-yuidoc">
+        function <span class="apidocSignatureSpan"></span>grunt-contrib-yuidoc
+        <span class="apidocSignatureSpan">(grunt)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">grunt-contrib-yuidoc = function (grunt) {
+
+  grunt.registerMultiTask(&#x27;yuidoc&#x27;, &#x27;Create YUIDocs&#x27;, function() {
+
+    var fs = require(&#x27;fs&#x27;);
+    var path = require(&#x27;path&#x27;);
+    var kindOf = grunt.util.kindOf;
+    var Y = require(&#x27;yuidocjs&#x27;);
+    var done = this.async();
+    var startTime = Date.now();
+    var json;
+
+    var options = this.options({
+      quiet: true
+    });
+
+    // process project data templates
+    var projectData = {};
+    grunt.util._.each(this.data, function(value, key) {
+      if (kindOf(value) === &#x27;string&#x27;) {
+        projectData[key] = value;
+      }
+    });
+
+    // when invoking yuidocs via node, the project details
+    // are assigned under the options object using the key
+    // &#x27;project&#x27;
+    options.project = projectData;
+
+    // Catch if required fields are not provided.
+    if (!options.paths) {
+      grunt.fail.warn(&#x27;No path(s) provided for YUIDoc to scan.&#x27;);
+    }
+    if (!options.outdir) {
+      grunt.fail.warn(&#x27;You must specify a directory for YUIDoc output.&#x27;);
+    }
+
+    // ensure destination dir is available
+    grunt.file.mkdir(options.outdir);
+
+    // Input path: array expected, but grunt conventions allows for either a string or an array.
+    if (kindOf(options.paths) === &#x27;string&#x27;) {
+      options.paths = [ options.paths ];
+    }
+
+    try {
+      json = (new Y.YUIDoc(options)).run();
+    } catch (e) {
+      grunt.warn(e);
+    }
+
+    options = Y.Project.mix(json, options);
+
+    if (options.parseOnly) {
+      fs.writeFileSync(path.join(options.outdir, &#x27;data.json&#x27;), JSON.stringify(json, null, 4));
+      done();
+    } else {
+      var builder = new Y.DocBuilder(options, json);
+
+      grunt.log.writeln(&#x27;Start YUIDoc compile...&#x27;);
+      grunt.log.writeln(&#x27;Scanning: &#x27; + grunt.log.wordlist(options.paths));
+      grunt.log.writeln(&#x27;Output: &#x27; + options.outdir.cyan);
+
+      builder.compile(function() {
+        var secondsTaken = (Date.now() - startTime) / 1000;
+        grunt.log.writeln(&#x27;YUIDoc compile completed in &#x27; + secondsTaken + &#x27; seconds&#x27;);
+        done();
+      });
+    }
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
